@@ -324,7 +324,7 @@ def filter_vertices(vertices, labels, ignore_under=0, drop_under=0):
     new_vertices, new_labels = vertices.copy(), labels.copy()
 
     areas = np.array([Polygon(v.reshape((4, 2))).convex_hull.area for v in vertices])
-    labels[areas < ignore_under] = 0
+    new_labels[areas < ignore_under] = 0
 
     if drop_under > 0:
         passed = areas >= drop_under
