@@ -23,15 +23,15 @@
 
 #### Given Image Dataset Specifications
 
-  * **Train: ICDAR17_Korean + boostcamp_Upstage**
+  * **Train dataset: ICDAR17_Korean + boostcamp_Upstage**
     * ICDAR17_Korean: 536장
     * boostcamp_Upstage: community annotated images
-  * **Test: Upstage**
+  * **Test dataset: Upstage**
   * **Dataset ratio**
     * Test dataset for public leaderboard: 50% of test dataset
     * Test dataset for private leaderboard: 50% of test dataset
 
-#### Imported Image Dataset List
+#### Imported Train Image Dataset List
 
   * ICDAR19_Korean
   * ICDAR19_English
@@ -61,7 +61,7 @@
     * Ensemble 과정을 생략하고 각자 데이터셋을 다르게 구성함
     * Hyperparameter tuning 과정을 생략하고 각자 learning rate를 다르게 설정함
   * **Dealing with fixed model**
-    * Learning rate scheduler로 MultiStepLR과 CosineAnnealingLR을 도입하여 비교 실험을 진행함
+    * Scheduler로 MultiStepLR과 CosineAnnealingLR을 도입하여 비교 실험을 진행함
     * 일부 실험에서 color jittering augmentation을 도입함
   * **Dealing with small storage capacity**
     * AI Hub 데이터셋을 Tiny, Small, Large 크기로 변형하여 사용함
@@ -70,15 +70,19 @@
 
 > 가장 높은 f1 score를 달성한 모델에 대해서만 기록
 
-  * Model: VGG-based pretrained EAST
-  * Dataset split: No validation set split(train set 100%)
-  * Metric: DetEval(split 20% penalty)
+  * **Model: VGG-based pretrained EAST**
+  * **Hyperparameters**
+    * Optimizer: torch.optim.Adam
+    * Learning rate: 1e-3 ~ 0
+    * Scheduler: torch.optim.lr_scheduler.CosineAnnealingLR
+  * **Dataset split: No validation set split(train set 100%)**
+  * **Metric: DetEval(split 20% penalty)**
 
 ### Thoughts
 
-> 좋은 데이터와 augmentation이 확실히 중요하다는 것을 느꼈다. 특히, 공개된 데이터셋마다 annotation 규칙이 다르기 때문에, 그냥 포맷만 맞춰서 학습시킬 경우 성능이 떨어질 수도 있음을 알게 되었다. 그리고 성능 관점에서는 train과 test에 사용하는 데이터셋의 분포가 비슷한 것이 좋을 것이지만, 여기서 분포가 무엇인지는 결국 inductive bias임을 알게 되었다. <br>
-> 이번 대회는 test 데이터셋이 아예 공개되지 않은 대회였다. 특히 private test 데이터셋과 public test 데이터셋의 분포가 많이 달랐는지, 리더보드에 큰 변화가 있었다. 학습 과정에서 train 데이터셋의 분포가 test 데이터셋과 유사하면 지금 학습이 잘 되고 있는지를 확인하기 좋겠지만, 그것보다는 test 데이터셋이 실제 서비스에서 만날 수 있는 데이터들과 유사한지가 generalization 관점에서 더 중요하다는 생각이 들었다. 다양성과 유사성의 균형이 잡힌 데이터셋 설계를 고민해 볼 필요가 있겠다. <br>
-> Precision은 올라가고 recall은 떨어지는 경우나, 그 반대의 경우는 어떤 의미인지 고민해 볼 수 있었다. 여러 가지 metric을 사용하는 것이 실무에서 유용할 것이라는 생각이 들었다. <br>
+> 좋은 데이터와 augmentation이 확실히 중요하다는 것을 느꼈다. 특히, 공개된 데이터셋마다 annotation 규칙이 다르기 때문에, 그냥 포맷만 맞춰서 학습시킬 경우 성능이 떨어질 수도 있음을 알게 되었다. 그리고 성능 관점에서는 train과 test에 사용하는 데이터셋의 분포가 비슷한 것이 좋을 것이지만, 여기서 분포가 무엇인지는 결국 inductive bias임을 알게 되었다. <br><br>
+> 이번 대회는 test 데이터셋이 아예 공개되지 않은 대회였다. 특히 private test 데이터셋과 public test 데이터셋의 분포가 많이 달랐는지, 리더보드에 큰 변화가 있었다. 학습 과정에서 train 데이터셋의 분포가 test 데이터셋과 유사하면 지금 학습이 잘 되고 있는지를 확인하기 좋겠지만, 그것보다는 test 데이터셋이 실제 서비스에서 만날 수 있는 데이터들과 유사한지가 generalization 관점에서 더 중요하다는 생각이 들었다. 다양성과 유사성의 균형이 잡힌 데이터셋 설계를 고민해 볼 필요가 있겠다. <br><br>
+> Precision은 올라가고 recall은 떨어지는 경우나, 그 반대의 경우는 어떤 의미인지 고민해 볼 수 있었다. 여러 가지 metric을 사용하는 것이 실무에서 유용할 것이라는 생각이 들었다. <br><br>
 > LR scheduler의 경우, CosineAnnealingLR이 MultiStepLR보다 성능 면에서 유리하다는 것을 확인했다. Data augmentation은 annotation을 해치치 않도록 사용하면 유용함을 확인했다.
 
 ### How To Train
